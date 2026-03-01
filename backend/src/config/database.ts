@@ -1,15 +1,30 @@
 import mysql from 'mysql2/promise';
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  port: parseInt(process.env.DB_PORT || '3306'),
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'roi_analysis',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-});
+function createPool() {
+  const dbUrl = process.env.DATABASE_URL || process.env.MYSQL_URL || process.env.MYSQURL;
+
+  if (dbUrl) {
+    return mysql.createPool({
+      uri: dbUrl,
+      waitForConnections: true,
+      connectionLimit: 10,
+      queueLimit: 0,
+    });
+  }
+
+  return mysql.createPool({
+    host: process.env.DB_HOST || process.env.MYSQLHOST || 'localhost',
+    port: parseInt(process.env.DB_PORT || process.env.MYSQLPORT || '3306'),
+    user: process.env.DB_USER || process.env.MYSQLUSER || 'root',
+    password: process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || '',
+    database: process.env.DB_NAME || process.env.MYSQLDATABASE || 'roi_analysis',
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+  });
+}
+
+const pool = createPool();
 
 export async function initDatabase(): Promise<void> {
   const conn = await pool.getConnection();

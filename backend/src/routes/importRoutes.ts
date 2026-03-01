@@ -16,7 +16,13 @@ router.post('/import', upload.single('file'), async (req: Request, res: Response
     if (req.file) {
       filePath = req.file.path;
     } else {
-      filePath = path.resolve(__dirname, '../../../app_roi_data.csv');
+      const candidates = [
+        path.resolve(process.cwd(), 'app_roi_data.csv'),
+        path.resolve(__dirname, '../../../app_roi_data.csv'),
+        path.resolve(__dirname, '../../app_roi_data.csv'),
+        path.resolve(__dirname, '../app_roi_data.csv'),
+      ];
+      filePath = candidates.find(p => fs.existsSync(p)) || candidates[0];
     }
 
     const result = await importCsvFile(filePath);

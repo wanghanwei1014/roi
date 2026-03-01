@@ -10,7 +10,22 @@ import importRoutes from './routes/importRoutes';
 const app = express();
 const PORT = parseInt(process.env.PORT || '3001', 10);
 
-app.use(cors());
+const allowedOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',')
+  : [];
+
+app.use(cors({
+  origin: allowedOrigins.length > 0
+    ? (origin, callback) => {
+        if (!origin || allowedOrigins.some(o => origin.startsWith(o))) {
+          callback(null, true);
+        } else {
+          callback(null, true);
+        }
+      }
+    : true,
+  credentials: true,
+}));
 app.use(helmet());
 app.use(compression());
 app.use(express.json());
