@@ -22,7 +22,6 @@ export default function Home() {
     anomalyData,
     loading,
     error,
-    dateRange,
     setSelectedApp,
     setSelectedCountry,
     setSelectedBidType,
